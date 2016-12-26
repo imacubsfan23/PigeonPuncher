@@ -1,4 +1,3 @@
-#added comment for commit practice
 import pygame, random
 pygame.init()
 pygame.display.set_caption('PigeonPuncher')
