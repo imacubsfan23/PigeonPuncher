@@ -1,17 +1,35 @@
-#imports
-import pygame
+#added comment for commit practice
+import pygame, random
+pygame.init()
 pygame.display.set_caption('PigeonPuncher')
 
 #initializing and variables
-BLUE = (0,0,255)
-pygame.Surface.fill(BLUE)
+screen_width = 1200
+screen_height = 900
+screen = pygame.display.set_mode((screen_width,screen_height))
 
 #classes and objects
-def Player(self):
-    self.pos_x = 0
-    self.change_y = 0
-    def calc_gravity(self):
-    
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+    def update(self):
+        #blit Anderson where gravity and jump say he is
+
+class Pigeon(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+        size = pygame.sprite.get_size
+        self.rect = size
+        self.pos_x = 
+        self.pos_y = 
+        self.change_x = 0
+
+    def spawn(self):
+        #random y value for spawn
+
+    def update(self:
+        
 #game loop
 def main():
     pygame.display.flip()
