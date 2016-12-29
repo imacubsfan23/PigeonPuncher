@@ -7,7 +7,10 @@ __author__ = "Tim Dickeson II"
 size = screen_width, screen_height = 1024, 768
 screen = pygame.display.set_mode(size)
 
-x,x1,y,scroll_speed = 0,screen_width,0,10
+x = 0
+x1 = screen_width
+y = 0
+scroll_speed = 10
 
 #-----Background-----#
 bg_path = os.path.join("images", "temp_bg.jpg")
@@ -41,6 +44,22 @@ pigeon2_path = os.path.join("images", "temp_pigeon2.png")
 temp_pigeon2 = pygame.image.load(pigeon2_path)
 temp_pigeon2_rect = temp_pigeon2.get_rect()
 
+
+class Background():
+        def draw():
+                screen.blit(temp_bg, temp_bg_rect)
+        def update():
+                global x, x1, y, scroll_speed
+                x -= scroll_speed
+                x1 -= scroll_speed
+                screen.blit(temp_bg,(x,y))
+                screen.blit(temp_bg,(x1,y))
+                if x < -screen_width:
+                        x = screen_width
+                if x1 < -screen_width:
+                        x1 = screen_width
+                
+
 '''#classes and objects
 class Player(pygame.sprite.Sprite):
     def __init__(self):
@@ -49,7 +68,7 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         #blit Anderson where gravity and jump say he is
 
-class Pigeon(pygame.sprite.Sprite):
+''/'class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         size = (20,20)
@@ -67,7 +86,7 @@ class Pigeon(pygame.sprite.Sprite):
 gameRunning = True
 while gameRunning:
         #blit background
-        screen.blit(temp_bg, temp_bg_rect)
+        Background.draw()
         
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -76,14 +95,7 @@ while gameRunning:
                         sys.exit()
                         
         #scroll handling
-        x -= scroll_speed
-        x1 -= scroll_speed
-        screen.blit(temp_bg,(x,y))
-        screen.blit(temp_bg,(x1,y))
-        if x < -screen_width:
-                x = screen_width
-        if x1 < -screen_width:
-                x1 = screen_width
+        Background.update()
         #end scroll handling
         
         pygame.display.flip()
