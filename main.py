@@ -3,19 +3,29 @@ pygame.init()
 pygame.display.set_caption('Pigeon Puncher')
 __author__ = "Tim Dickeson II"
 
-#Background size must be 1024x768
-size = screen_width, screen_height = 1024, 768
-screen = pygame.display.set_mode(size)
-
-x = 0
-x1 = screen_width
-y = 0
-scroll_speed = 10
-
 #-----Background-----#
 bg_path = os.path.join("images", "temp_bg.jpg")
 temp_bg = pygame.image.load(bg_path)
 temp_bg_rect = temp_bg.get_rect()
+
+size = screen_width, screen_height = 1024, 768 #must be 1024,768
+screen = pygame.display.set_mode(size)
+x = 0
+x1 = screen_width
+y = 0
+scroll_speed = 20
+
+def UpdateBackground():
+        global x, x1, y, scroll_speed
+        screen.blit(temp_bg, temp_bg_rect)
+        x -= scroll_speed
+        x1 -= scroll_speed
+        screen.blit(temp_bg,(x,y))
+        screen.blit(temp_bg,(x1,y))
+        if x < -screen_width:
+                x = screen_width
+        if x1 < -screen_width:
+                x1 = screen_width
 
 #-----Anderson Walking Animations-----#
 walk1_path = os.path.join("images", "temp_walk1.png")
@@ -44,31 +54,16 @@ pigeon2_path = os.path.join("images", "temp_pigeon2.png")
 temp_pigeon2 = pygame.image.load(pigeon2_path)
 temp_pigeon2_rect = temp_pigeon2.get_rect()
 
-
-class Background():
-        def draw():
-                screen.blit(temp_bg, temp_bg_rect)
-        def update():
-                global x, x1, y, scroll_speed
-                x -= scroll_speed
-                x1 -= scroll_speed
-                screen.blit(temp_bg,(x,y))
-                screen.blit(temp_bg,(x1,y))
-                if x < -screen_width:
-                        x = screen_width
-                if x1 < -screen_width:
-                        x1 = screen_width
-                
-
-'''#classes and objects
+#classes and objects
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
 
     def update(self):
         #blit Anderson where gravity and jump say he is
+        screen.blit(temp_walk1, temp_walk1_rect)        
 
-''/'class Pigeon(pygame.sprite.Sprite):
+'''class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         size = (20,20)
@@ -82,20 +77,13 @@ class Player(pygame.sprite.Sprite):
     def update(self):
         self.pos_x += self.change_x'''
 
-#game loop
+#-----Game Loop-----#
 gameRunning = True
 while gameRunning:
-        #blit background
-        Background.draw()
-        
         for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                         gameRunning = False
                         pygame.quit()
                         sys.exit()
-                        
-        #scroll handling
-        Background.update()
-        #end scroll handling
-        
+        UpdateBackground()
         pygame.display.flip()
