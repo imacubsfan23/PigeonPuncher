@@ -2,6 +2,7 @@ import pygame, random, sys, os
 pygame.init()
 pygame.display.set_caption('Pigeon Puncher')
 __author__ = "Tim Dickeson II"
+clock = pygame.time.Clock()
 
 #-----Background-----#
 bg_path = os.path.join("images", "bg.jpg")
@@ -40,11 +41,9 @@ walk2 = pygame.image.load(walk2_path)
 #-----Anderson Jetpack Animations-----#
 jetpack_off_path = os.path.join("images", "jetpack_off.png")
 jetpack_off = pygame.image.load(jetpack_off_path)
-jetpack_off_rect = jetpack_off.get_rect()
 
 jetpack_on_path = os.path.join("images", "jetpack_on.png")
 jetpack_on = pygame.image.load(jetpack_on_path)
-jetpack_on_rect = jetpack_on.get_rect()
 
 #-----Pigeon Flying Animations-----#
 pigeon1_path = os.path.join("images", "pigeon1.png")
@@ -63,36 +62,55 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.animation = self.images[self.firstIndex:self.lastIndex]
         self.rect = pygame.Rect(0, 0, 64, 64)
-        
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
         self.change_y = 15
 
+    def walk(self):
+        temp_time = pygame.time.get_ticks()
+        counter = 0
+        switchTimer = 4
+        if(temp_time%switchTimer==0):
+            temp_time -= switchTimer
+            counter+=1
+
+        if(counter%2==0):
+            return walk1
+        else:
+            return walk2
+
+    def jetpackOn(self):
+        return jetpack_on
+
+    def jetpackOff(self):
+        return jetpack_off
+
+    def animate(self, Surface):
+        screen.blit(Surface, self.rect)
+
     def update(self):
+        '''creates boundaries'''
         self.pos_y += self.change_y
         if self.pos_y > floor-self.change_y:
             self.pos_y = floor
         elif self.pos_y < ceiling-self.change_y:
             self.pos_y = ceiling
         
+        #-START ANIMATIONS-#
         if self.pos_y >= floor:
-            self.firstIndex = 0
-            self.lastIndex = 1
+            animation = self.walk()
         else:
             if self.change_y < 0:
-                self.firstIndex = 2
-                self.lastIndex = 2
+                animation = self.jetpackOn()
             elif self.change_y > 0:
-                self.firstIndex = 3
-                self.lastIndex = 3
-        self.index = self.firstIndex
+                animation = self.jetpackOff()
+                
         self.rect = (self.pos_x,self.pos_y)
-        for i in range(len(self.animation)):
-            screen.blit(self.animation[i], self.rect)
+        self.animate(animation)
+        #-END ANIMATIONS-#
 
-'''class Pigeon(pygame.sprite.Sprite):
+class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         size = (20,20)
@@ -103,10 +121,10 @@ class Player(pygame.sprite.Sprite):
         self.pos_y = random.randrange(0,screen_height-60)
 
     def update(self):
-        self.pos_x += self.change_x'''
+        self.pos_x += self.change_x
 
 player = Player()
-'''pigeon = Pigeon()'''
+pigeon = Pigeon()
 #-----Game Loop-----#
 gameRunning = True
 while gameRunning:
