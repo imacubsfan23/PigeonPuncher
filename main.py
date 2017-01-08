@@ -10,6 +10,7 @@ bg_rect = bg.get_rect()
 
 size = screen_width, screen_height = 1024, 768 #must be 1024,768
 floor = screen_height * 0.76
+ceiling = screen_height * 0.14
 screen = pygame.display.set_mode(size)
 x = 0
 x1 = screen_width
@@ -62,37 +63,36 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.image = self.images[self.index]
+        self.animation = self.images[self.firstIndex:self.lastIndex]
         self.rect = pygame.Rect(0, 0, 64, 64)
         
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
-        self.change_y = 0
+        self.change_y = 15
 
     def update(self):
+        self.pos_y += self.change_y
+        if self.pos_y > floor-self.change_y:
+            self.pos_y = floor
+        elif self.pos_y < ceiling-self.change_y:
+            self.pos_y = ceiling
+        
         if self.pos_y >= floor:
-            self.index = 0
             self.firstIndex = 0
             self.lastIndex = 1
         else:
             if self.change_y < 0:
-                self.index = 2
                 self.firstIndex = 2
                 self.lastIndex = 2
             elif self.change_y > 0:
-                self.index = 3
                 self.firstIndex = 3
                 self.lastIndex = 3
-        self.image = self.images[self.index]
+        self.index = self.firstIndex
         self.rect = (self.pos_x,self.pos_y)
-        screen.blit(self.image, self.rect)
-        if self.pos_y > floor:
-                self.pos_y = floor
-        self.index += 1
-        if self.index > self.lastIndex:
-                self.index = self.firstIndex
+        for i in range(len(self.animation)):
+            screen.blit(self.animation[i], self.rect)
 
-class Pigeon(pygame.sprite.Sprite):
+'''class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         size = (20,20)
@@ -103,18 +103,22 @@ class Pigeon(pygame.sprite.Sprite):
         self.pos_y = random.randrange(0,screen_height-60)
 
     def update(self):
-        self.pos_x += self.change_x
+        self.pos_x += self.change_x'''
 
 player = Player()
-pigeon = Pigeon()
+'''pigeon = Pigeon()'''
 #-----Game Loop-----#
 gameRunning = True
 while gameRunning:
+    UpdateBackground()
+    Player.update(player)
+    pygame.display.flip()
     for event in pygame.event.get():
+        if event.type == pygame.KEYDOWN:
+            player.change_y = -15
+        if event.type == pygame.KEYUP:
+            player.change_y = 15
         if event.type == pygame.QUIT:
             gameRunning = False
             pygame.quit()
             sys.exit()
-    UpdateBackground()
-    Player.update(player)
-    pygame.display.flip()
