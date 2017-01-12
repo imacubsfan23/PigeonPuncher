@@ -10,13 +10,14 @@ bg = pygame.image.load(bg_path)
 bg_rect = bg.get_rect()
 
 size = screen_width, screen_height = 1024, 768 #must be 1024,768
-floor = screen_height * 0.76
-ceiling = screen_height * 0.14
+floor = int(screen_height * 0.76)
+ceiling = int(screen_height * 0.14)
 screen = pygame.display.set_mode(size)
 x = 0
 x1 = screen_width
 y = 0
 scroll_speed = 15
+alter_speed = 1
 
 def UpdateBackground():
         global x, x1, y, scroll_speed
@@ -57,6 +58,7 @@ pigeon2_rect = pigeon2.get_rect()
 #classes and objects
 class Player(pygame.sprite.Sprite):
     def __init__(self):
+        global alter_speed
         pygame.sprite.Sprite.__init__(self)
         self.images = [walk1, walk2, jetpack_on, jetpack_off]
         self.index = 0
@@ -65,7 +67,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, 64, 64)
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
-        self.change_y = 15
+        self.change_y = 20
+        self.alter_speed = 1
 
     def walk(self):
         temp_time = pygame.time.get_ticks()
@@ -90,7 +93,6 @@ class Player(pygame.sprite.Sprite):
         screen.blit(Surface, self.rect)
 
     def update(self):
-        '''creates boundaries'''
         self.pos_y += self.change_y
         if self.pos_y > floor-self.change_y:
             self.pos_y = floor
@@ -108,20 +110,52 @@ class Player(pygame.sprite.Sprite):
                 
         self.rect = (self.pos_x,self.pos_y)
         self.animate(animation)
-        #-END ANIMATIONS-#
+        #--END ANIMATIONS--#
 
 class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        size = (20,20)
+        self.images = [pigeon1, pigeon2]
+        self.index = 0
+        self.firstIndex = 0
+        self.lastIndex = 1
+        self.rect = pygame.Rect(0, 0, 64, 64)
         self.pos_x = screen_width
-        self.change_x = -5
+        self.pos_y = ceiling
+        self.change_x = -30
+        self.spawn_pixels = screen_width
+        self.count_punched = 0
 
-    def spawn(self, pos_y):
-        self.pos_y = random.randrange(0,screen_height-60)
+    def fly(self):
+        temp_time = pygame.time.get_ticks()
+        counter = 0
+        switchTimer = 4
+        if(temp_time%switchTimer==0):
+            temp_time -= switchTimer
+            counter+=1
+
+        if(counter%2==0):
+            return pigeon1
+        else:
+            return pigeon2
+
+    def animate(self, Surface):
+        screen.blit(Surface, self.rect)
+
+    def spawn(self, pos_x, pos_y):
+        self.pos_x = screen_width
+        self.pos_y = random.randrange(ceiling,floor)
+        self.count_punched += 1
 
     def update(self):
+        if(self.pos_x<=screen_width-self.spawn_pixels):
+            self.spawn(self.pos_x, self.pos_y)
         self.pos_x += self.change_x
+
+        #-START ANIMATIONS-#
+        self.rect = (self.pos_x, self.pos_y)
+        self.animate(self.fly())
+        #--END ANIMATIONS--#
 
 player = Player()
 pigeon = Pigeon()
@@ -129,13 +163,14 @@ pigeon = Pigeon()
 gameRunning = True
 while gameRunning:
     UpdateBackground()
+    Pigeon.update(pigeon)
     Player.update(player)
     pygame.display.flip()
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
-            player.change_y = -15
+            player.change_y *= -1
         if event.type == pygame.KEYUP:
-            player.change_y = 15
+            player.change_y *= -1
         if event.type == pygame.QUIT:
             gameRunning = False
             pygame.quit()
