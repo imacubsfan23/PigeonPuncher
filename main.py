@@ -16,8 +16,7 @@ screen = pygame.display.set_mode(size)
 x = 0
 x1 = screen_width
 y = 0
-scroll_speed = 15
-alter_speed = 1
+scroll_speed = 10
 
 def UpdateBackground():
         global x, x1, y, scroll_speed
@@ -47,24 +46,23 @@ jetpack_on_path = os.path.join("images", "jetpack_on.png")
 jetpack_on = pygame.image.load(jetpack_on_path)
 
 #-----Pigeon Flying Animations-----#
-pigeon1_path = os.path.join("images", "pigeon1.png")
+pigeon1_path = os.path.join("images", "pigeon1.gif")
 pigeon1 = pygame.image.load(pigeon1_path)
 pigeon1_rect = pigeon1.get_rect()
 
-pigeon2_path = os.path.join("images", "pigeon2.png")
+pigeon2_path = os.path.join("images", "pigeon2.gif")
 pigeon2 = pygame.image.load(pigeon2_path)
 pigeon2_rect = pigeon2.get_rect()
 
 #classes and objects
 class Player(pygame.sprite.Sprite):
     def __init__(self):
-        global alter_speed
         pygame.sprite.Sprite.__init__(self)
         self.images = [walk1, walk2, jetpack_on, jetpack_off]
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.rect = pygame.Rect(0, 0, 64, 64)
+        self.rect = pygame.Rect(0, 0, 48, 55)
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
         self.change_y = 20
