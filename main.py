@@ -1,10 +1,12 @@
-import pygame, random, sys, os, time
+import pygame, random, os, time
 pygame.init()
 pygame.display.set_caption('Pigeon Puncher')
 __author__ = "Tim Dickeson II"
 clock = pygame.time.Clock()
 
 White = (255, 255, 255)
+Black = (0, 0, 0)
+Grey = (30, 30, 30)
 
 #-----Background-----#
 bg_path = os.path.join("images", "bg.jpg")
@@ -104,7 +106,6 @@ class Player(pygame.sprite.Sprite):
         if player.rect.colliderect(pigeon.rect):
             animation = self.punch()
             pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
-            print(pigeon.count_punched)
 
     def update(self):
         self.pos_y += self.change_y
@@ -126,6 +127,7 @@ class Player(pygame.sprite.Sprite):
         self.detectCollision()
         self.animate(animation)
         #--END ANIMATIONS--#
+player = Player()
 
 class Pigeon(pygame.sprite.Sprite):
     def __init__(self):
@@ -173,41 +175,87 @@ class Pigeon(pygame.sprite.Sprite):
         self.rect = pygame.Rect(self.pos_x, self.pos_y, 48, 55)
         self.animate(self.fly())
         #--END ANIMATIONS--#
+pigeon = Pigeon()
 
 def text_objects(text, font):
     textSurface = font.render(text, True, White)
     return textSurface, textSurface.get_rect()
 
+def button(msg,x,y,w,h,ic,ac,action=None):
+    mouse = pygame.mouse.get_pos()
+    click = pygame.mouse.get_pressed()
+    if x+w > mouse[0] > x and y+h > mouse[1] > y:
+        pygame.draw.rect(screen, ac,(x,y,w,h))
+        if click[0] == 1 and action != None:
+            action()         
+    else:
+        pygame.draw.rect(screen, ic,(x,y,w,h))
+
+    smallText = pygame.font.Font("game_font.ttf",20)
+    textSurf, textRect = text_objects(msg, smallText)
+    textRect.center = ( (x+(w/2)), (y+(h/2)) )
+    screen.blit(textSurf, textRect)
+
 def display_score(text):
-    largeText = pygame.font.Font('vgaoem.fon', 12)
+    largeText = pygame.font.Font('game_font.ttf', 60)
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.left = 10
-    TextRect.top = 10
     screen.blit(TextSurf, TextRect)
+
+def gameIntro():
+    intro = True
+    while intro:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+        UpdateBackground()
+        Player.update(player)
+        largeText = pygame.font.Font('game_font.ttf', 60)
+        TextSurf, TextRect = text_objects('Pigeon Puncher', largeText)
+        TextRect.center = ((screen_width/2),(screen_height/2))
+        screen.blit(TextSurf, TextRect)
+        button('Start',
+               TextRect.center[0]-50, TextRect.center[1]+50,
+               80, 50,
+               Black, Grey,
+               gameLoop)
+        pygame.display.flip()
+        clock.tick(120)
+
+def gameLoop():
+    global times_ran
+    gameRunning = True
+    while gameRunning:
+        UpdateBackground()
+        Pigeon.update(pigeon)
+        Player.update(player)
+        if times_ran != 0:
+            display_score('Score: ' + str(pigeon.count_punched))
+        else:
+            display_score('Score: 0')
+        pygame.display.flip()
+        clock.tick(60)
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                player.change_y *= -1
+            if event.type == pygame.KEYUP:
+                player.change_y *= -1
+            if event.type == pygame.QUIT:
+                gameOver()
+        times_ran += 1
 
 def gameOver():
     gameRunning = False
     pygame.quit()
-    sys.exit()
+    quit()
 
-player = Player()
-pigeon = Pigeon()
-#-----Game Loop-----#
-gameRunning = True
-while gameRunning:
-    UpdateBackground()
-    Pigeon.update(pigeon)
-    Player.update(player)
-    if times_ran != 0:
-        display_score('Score: ' + str(pigeon.count_punched))
-    else:
-        display_score('Score: 0')
-    pygame.display.flip()
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            player.change_y *= -1
-        if event.type == pygame.KEYUP:
-            player.change_y *= -1
-        if event.type == pygame.QUIT:
-            gameOver()
-    times_ran += 1
+def main():
+    gameIntro()
+    gameLoop()
+
+if __name__ == '__main__':
+    main()
+
+
+    
