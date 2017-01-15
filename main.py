@@ -1,4 +1,4 @@
-import pygame, random, sys, os
+import pygame, random, sys, os, time
 pygame.init()
 pygame.display.set_caption('Pigeon Puncher')
 __author__ = "Tim Dickeson II"
@@ -66,10 +66,10 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.rect = pygame.Rect(0, 0, 45, 50)
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
-        self.change_y = 20
+        self.rect = pygame.Rect(0, 0, 45, 50)
+        self.change_y = 30
         self.alter_speed = 1
 
     def walk(self):
@@ -113,7 +113,7 @@ class Player(pygame.sprite.Sprite):
             elif self.change_y > 0:
                 animation = self.jetpackOff()
                 
-        self.rect = (self.pos_x,self.pos_y)
+        self.rect = pygame.Rect(self.pos_x, self.pos_y, 45, 50)
         self.animate(animation)
         #--END ANIMATIONS--#
 
@@ -124,12 +124,12 @@ class Pigeon(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.rect = pygame.Rect(0, 0, 48, 55)
         self.pos_x = screen_width
         self.pos_y = ceiling
-        self.change_x = -30
+        self.rect = pygame.Rect(0, 0, 48, 55)        
+        self.change_x = -35
         self.spawn_pixels = screen_width
-        self.count_punched = 0
+        self.count_punched = -1
 
     def fly(self):
         temp_time = pygame.time.get_ticks()
@@ -158,7 +158,7 @@ class Pigeon(pygame.sprite.Sprite):
         self.pos_x += self.change_x
 
         #-START ANIMATIONS-#
-        self.rect = (self.pos_x, self.pos_y)
+        self.rect = pygame.Rect(self.pos_x, self.pos_y, 48, 55)
         self.animate(self.fly())
         #--END ANIMATIONS--#
 
@@ -171,6 +171,9 @@ while gameRunning:
     Pigeon.update(pigeon)
     Player.update(player)
     pygame.display.flip()
+    if pigeon.rect.colliderect(player.rect):
+            pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
+            print(pigeon.count_punched)
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             player.change_y *= -1
