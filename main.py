@@ -8,6 +8,14 @@ White = (255, 255, 255)
 Black = (0, 0, 0)
 Grey = (30, 30, 30)
 
+#-----Sound and Music-----#
+punch_sound_path = os.path.join('sounds and music', 'punch.wav')
+punch_sound = pygame.mixer.Sound(punch_sound_path)
+music_path = os.path.join('sounds and music', 'music.wav')
+music = pygame.mixer.music.load(music_path)
+gameover_sound_path = os.path.join('sounds and music', 'gameover.wav')
+gameover_sound = pygame.mixer.Sound(gameover_sound_path)
+
 #-----Background-----#
 bg_path = os.path.join('images', 'bg.jpg')
 bg = pygame.image.load(bg_path)
@@ -105,6 +113,7 @@ class Player(pygame.sprite.Sprite):
 
     def detectCollision(self):
         if player.rect.colliderect(pigeon.rect):
+            pygame.mixer.Sound.play(punch_sound)
             animation = self.punch()
             pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
             return True
@@ -229,6 +238,7 @@ def gameIntro():
         clock.tick(120)
 
 def gameLoop():
+    pygame.mixer.music.play(-1)
     global times_ran
     gameRunning = True
     while gameRunning:
@@ -259,8 +269,10 @@ def restartGameLoop():
     gameLoop()
 
 def gameOver():
+    pygame.mixer.Sound.play(gameover_sound)
     gameRunning = False
     while not gameRunning:
+        pygame.mixer.music.stop()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameOverTasks()
@@ -294,6 +306,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-    
