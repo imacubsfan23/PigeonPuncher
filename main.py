@@ -4,6 +4,8 @@ pygame.display.set_caption('Pigeon Puncher')
 __author__ = "Tim Dickeson II"
 clock = pygame.time.Clock()
 
+White = (255, 255, 255)
+
 #-----Background-----#
 bg_path = os.path.join("images", "bg.jpg")
 bg = pygame.image.load(bg_path)
@@ -17,6 +19,7 @@ x = 0
 x1 = screen_width
 y = 0
 scroll_speed = 10
+times_ran = 0
 
 def UpdateBackground():
         global x, x1, y, scroll_speed
@@ -97,6 +100,12 @@ class Player(pygame.sprite.Sprite):
     def animate(self, Surface):
         screen.blit(Surface, self.rect)
 
+    def detectCollision(self):
+        if player.rect.colliderect(pigeon.rect):
+            animation = self.punch()
+            pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
+            print(pigeon.count_punched)
+
     def update(self):
         self.pos_y += self.change_y
         if self.pos_y > floor-self.change_y:
@@ -114,6 +123,7 @@ class Player(pygame.sprite.Sprite):
                 animation = self.jetpackOff()
                 
         self.rect = pygame.Rect(self.pos_x, self.pos_y, 45, 50)
+        self.detectCollision()
         self.animate(animation)
         #--END ANIMATIONS--#
 
@@ -129,7 +139,7 @@ class Pigeon(pygame.sprite.Sprite):
         self.rect = pygame.Rect(0, 0, 48, 55)        
         self.change_x = -35
         self.spawn_pixels = screen_width
-        self.count_punched = -1
+        self.count_punched = 0
 
     def fly(self):
         temp_time = pygame.time.get_ticks()
@@ -154,13 +164,31 @@ class Pigeon(pygame.sprite.Sprite):
 
     def update(self):
         if(self.pos_x<=screen_width-self.spawn_pixels):
+            #gameOver()
             self.spawn(self.pos_x, self.pos_y)
+            self.count_punched -= 1
         self.pos_x += self.change_x
 
         #-START ANIMATIONS-#
         self.rect = pygame.Rect(self.pos_x, self.pos_y, 48, 55)
         self.animate(self.fly())
         #--END ANIMATIONS--#
+
+def text_objects(text, font):
+    textSurface = font.render(text, True, White)
+    return textSurface, textSurface.get_rect()
+
+def display_score(text):
+    largeText = pygame.font.Font('vgaoem.fon', 12)
+    TextSurf, TextRect = text_objects(text, largeText)
+    TextRect.left = 10
+    TextRect.top = 10
+    screen.blit(TextSurf, TextRect)
+
+def gameOver():
+    gameRunning = False
+    pygame.quit()
+    sys.exit()
 
 player = Player()
 pigeon = Pigeon()
@@ -170,16 +198,16 @@ while gameRunning:
     UpdateBackground()
     Pigeon.update(pigeon)
     Player.update(player)
+    if times_ran != 0:
+        display_score('Score: ' + str(pigeon.count_punched))
+    else:
+        display_score('Score: 0')
     pygame.display.flip()
-    if pigeon.rect.colliderect(player.rect):
-            pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
-            print(pigeon.count_punched)
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             player.change_y *= -1
         if event.type == pygame.KEYUP:
             player.change_y *= -1
         if event.type == pygame.QUIT:
-            gameRunning = False
-            pygame.quit()
-            sys.exit()
+            gameOver()
+    times_ran += 1
