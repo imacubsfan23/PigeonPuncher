@@ -21,8 +21,8 @@ bg_path = os.path.join('images', 'bg.jpg')
 bg = pygame.image.load(bg_path)
 bg_rect = bg.get_rect()
 
-size = screen_width, screen_height = 1024, 768 #must be 1024,768
-floor = int(screen_height * 0.78)
+size = screen_width, screen_height = 892, 640
+floor = int(screen_height * .81)
 ceiling = int(screen_height * 0.14)
 screen = pygame.display.set_mode(size)
 x = 0
