@@ -10,7 +10,7 @@ bg = pygame.image.load(bg_path)
 bg_rect = bg.get_rect()
 
 size = screen_width, screen_height = 1024, 768 #must be 1024,768
-floor = int(screen_height * 0.76)
+floor = int(screen_height * 0.78)
 ceiling = int(screen_height * 0.14)
 screen = pygame.display.set_mode(size)
 x = 0
@@ -45,6 +45,10 @@ jetpack_off = pygame.image.load(jetpack_off_path)
 jetpack_on_path = os.path.join("images", "jetpack_on.png")
 jetpack_on = pygame.image.load(jetpack_on_path)
 
+#-----Anderson Punch Animation-----#
+punch_pic_path = os.path.join("images", "punch.png")
+punch_pic = pygame.image.load(punch_pic_path)
+
 #-----Pigeon Flying Animations-----#
 pigeon1_path = os.path.join("images", "pigeon1.gif")
 pigeon1 = pygame.image.load(pigeon1_path)
@@ -62,7 +66,7 @@ class Player(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.rect = pygame.Rect(0, 0, 48, 55)
+        self.rect = pygame.Rect(0, 0, 45, 50)
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
         self.change_y = 20
@@ -86,6 +90,9 @@ class Player(pygame.sprite.Sprite):
 
     def jetpackOff(self):
         return jetpack_off
+
+    def punch(self):
+        return punch_pic
 
     def animate(self, Surface):
         screen.blit(Surface, self.rect)
@@ -117,7 +124,7 @@ class Pigeon(pygame.sprite.Sprite):
         self.index = 0
         self.firstIndex = 0
         self.lastIndex = 1
-        self.rect = pygame.Rect(0, 0, 64, 64)
+        self.rect = pygame.Rect(0, 0, 48, 55)
         self.pos_x = screen_width
         self.pos_y = ceiling
         self.change_x = -30
