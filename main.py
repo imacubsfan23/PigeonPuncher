@@ -94,10 +94,7 @@ class Player(pygame.sprite.Sprite):
             temp_time -= switchTimer
             counter+=1
 
-        if(counter%2==0):
-            return walk1
-        else:
-            return walk2
+        return counter%2==0 ? pigeon1 : pigeon2
 
     def jetpackOn(self):
         return jetpack_on
@@ -117,8 +114,7 @@ class Player(pygame.sprite.Sprite):
             animation = self.punch()
             pigeon.spawn(pigeon.pos_x, pigeon.pos_y)
             return True
-        else:
-            return False
+        return False
 
     def update(self):
         self.pos_y += self.change_y
@@ -166,10 +162,7 @@ class Pigeon(pygame.sprite.Sprite):
             temp_time -= switchTimer
             counter+=1
 
-        if(counter%2==0):
-            return pigeon1
-        else:
-            return pigeon2
+        return counter%2==0 ? pigeon1 : pigeon2
 
     def animate(self, Surface):
         screen.blit(Surface, self.rect)
