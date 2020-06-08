@@ -3,6 +3,7 @@ pygame.init()
 pygame.display.set_caption('Pigeon Puncher')
 __author__ = 'Tim Dickeson II'
 clock = pygame.time.Clock()
+game_speed = 30
 
 White = (255, 255, 255)
 Black = (0, 0, 0)
@@ -84,7 +85,8 @@ class Player(pygame.sprite.Sprite):
         self.pos_x = screen_width * 0.1
         self.pos_y = floor
         self.rect = pygame.Rect(0, 0, 45, 50)
-        self.change_y = 30
+        self.change_y = 20
+        self.walk_frame_1 = True #only works because 2 frames total
 
     def walk(self):
         temp_time = pygame.time.get_ticks()
@@ -93,8 +95,12 @@ class Player(pygame.sprite.Sprite):
         if(temp_time%switchTimer==0):
             temp_time -= switchTimer
             counter+=1
-
-        return counter%2==0 ? pigeon1 : pigeon2
+            
+        if self.walk_frame_1:
+            self.walk_frame_1 = False
+            return walk1
+        self.walk_frame_1 = True
+        return walk2
 
     def jetpackOn(self):
         return jetpack_on
@@ -150,9 +156,10 @@ class Pigeon(pygame.sprite.Sprite):
         self.pos_x = screen_width
         self.pos_y = floor
         self.rect = pygame.Rect(0, 0, 48, 55)        
-        self.change_x = -35
+        self.change_x = -20
         self.spawn_pixels = screen_width
         self.count_punched = 0
+        self.fly_frame_1 = True #only works because 2 frames total
 
     def fly(self):
         temp_time = pygame.time.get_ticks()
@@ -162,7 +169,11 @@ class Pigeon(pygame.sprite.Sprite):
             temp_time -= switchTimer
             counter+=1
 
-        return counter%2==0 ? pigeon1 : pigeon2
+        if self.fly_frame_1:
+            self.fly_frame_1 = False
+            return pigeon1
+        self.fly_frame_1 = True
+        return pigeon2
 
     def animate(self, Surface):
         screen.blit(Surface, self.rect)
@@ -228,7 +239,7 @@ def gameIntro():
                Black, Grey,
                gameLoop)
         pygame.display.flip()
-        clock.tick(120)
+        clock.tick(game_speed)
 
 def gameLoop():
     pygame.mixer.music.play(-1)
@@ -244,7 +255,7 @@ def gameLoop():
             pigeon.count_punched = 0
             display_score('Score: 0')
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(game_speed)
         for event in pygame.event.get():
             if event.type == pygame.KEYDOWN:
                 player.change_y *= -1
@@ -286,7 +297,7 @@ def gameOver():
                Black, Grey,
                gameOverTasks)
         pygame.display.flip()
-        clock.tick(120)
+        clock.tick(game_speed)
 
 def gameOverTasks():
     pygame.quit()
